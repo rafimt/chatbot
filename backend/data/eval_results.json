@@ -1,0 +1,201 @@
+[
+ {
+  "question": "How many strip plantations are recorded?",
+  "ok": true,
+  "seconds": 2.4,
+  "route": "sql",
+  "trace": [
+   "router→sql",
+   "sql",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "There are 22 strip plantations recorded in the documents.",
+  "sql": "SELECT COUNT(*) AS count, GROUP_CONCAT(file) AS files FROM plantations WHERE type='strip'"
+ },
+ {
+  "question": "How many mangrove plantations are recorded?",
+  "ok": true,
+  "seconds": 3.1,
+  "route": "sql",
+  "trace": [
+   "router→sql",
+   "sql",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "There are 40 mangrove plantations recorded in the documents.",
+  "sql": "SELECT COUNT(*) AS count, GROUP_CONCAT(file) AS files FROM plantations WHERE type='mangrove'"
+ },
+ {
+  "question": "Which range has the most plantation journals?",
+  "ok": true,
+  "seconds": 1.7,
+  "route": "sql",
+  "trace": [
+   "router→sql",
+   "sql",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "The Jahajmara range has the most plantation journals, with a total of 14 journals recorded.",
+  "sql": "SELECT range, COUNT(*) AS journal_count, GROUP_CONCAT(file) AS files FROM plantations WHERE range IS NOT NULL GROUP BY range ORDER BY journal_count DESC LIMIT 1"
+ },
+ {
+  "question": "How many journals are from Hatiya upazila?",
+  "ok": true,
+  "seconds": 2.1,
+  "route": "sql",
+  "trace": [
+   "router→sql",
+   "sql",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "There are 43 journals from Hatiya upazila.",
+  "sql": "SELECT COUNT(*) AS journal_count, GROUP_CONCAT(file) AS files FROM plantations WHERE upazila = 'Hatiya' AND upazila IS NOT NULL"
+ },
+ {
+  "question": "How many plantations were done in financial year 2020-2021?",
+  "ok": true,
+  "seconds": 2.0,
+  "route": "sql",
+  "trace": [
+   "router→sql",
+   "sql",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "There were 9 plantations done in financial year 2020-2021. This count is based on the available plantation journals for that fiscal year, excluding 12 journals written in Bangla that could not be read.",
+  "sql": "SELECT COUNT(*) AS plantation_count, GROUP_CONCAT(file) AS files FROM plantations WHERE fiscal_year = '2020-21' AND fiscal_year IS NOT NULL"
+ },
+ {
+  "question": "What is the total strip plantation length in seedling kilometers?",
+  "ok": true,
+  "seconds": 2.7,
+  "route": "sql",
+  "trace": [
+   "router→sql",
+   "sql",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "The total strip plantation length is 442.0 seedling kilometers. This figure is derived from the sum of areas recorded in the plantations table for entries specifically categorized as strip plantations.",
+  "sql": "SELECT SUM(area_skm) AS total_strip_km, GROUP_CONCAT(file) AS files FROM plantations WHERE type='strip' AND type IS NOT NULL"
+ },
+ {
+  "question": "Which species were planted in the Char Kalam plantation?",
+  "ok": true,
+  "seconds": 3.2,
+  "route": "docs",
+  "trace": [
+   "router→docs",
+   "retrieve",
+   "grade(1/6)",
+   "generate",
+   "check(ok)"
+  ],
+  "answer": "The species planted in the Char Kalam plantation were Keora, Gewa, and Bain. This 400-hectare mangrove plantation was established in the Char Kalam and New Char Yunus areas of Hatiya, Noakhali, during the 2020-21 financial year under the SUFAL Project.",
+  "sql": null
+ },
+ {
+  "question": "What spacing was used for the Keora mangrove plantations?",
+  "ok": true,
+  "seconds": 3.2,
+  "route": "docs",
+  "trace": [
+   "router→docs",
+   "retrieve",
+   "grade(5/6)",
+   "generate",
+   "check(ok)"
+  ],
+  "answer": "The Keora mangrove plantations were established at a spacing of 1.5 m x 1.5 m. This spacing was applied to 2-month-old seedlings planted on the muddy banks of small creeks and canals in Hatiya, Noakhali, during the 2019-20 to 2021-22 fiscal years.",
+  "sql": null
+ },
+ {
+  "question": "Who is the land regulatory agency for the Noakhali Range strip plantation?",
+  "ok": true,
+  "seconds": 1.7,
+  "route": "docs",
+  "trace": [
+   "router→docs",
+   "retrieve",
+   "grade(1/6)",
+   "generate",
+   "check(ok)"
+  ],
+  "answer": "The land regulatory agency for the Noakhali Range strip plantation is the Bangladesh Water Development Board, Noakhali. This 10 SKM strip plantation was established in the Noakhali Sadar Upazila during the 2023-24 fiscal year under the SUFAL Project.",
+  "sql": null
+ },
+ {
+  "question": "What is the plantation area of Char Kalam Beat in 2020-2021?",
+  "ok": true,
+  "seconds": 2.3,
+  "route": "sql",
+  "trace": [
+   "router→sql",
+   "sql",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "The total plantation area for Char Kalam Beat in 2020-2021 was 420.0 hectares. This consists of 400.0 hectares of mangrove plantation and 20.0 hectares of mangrove enrichment plantation.",
+  "sql": "SELECT file, type, area_ha, area_skm, seedlings FROM plantations WHERE beat LIKE '%Char Kalam%' AND fiscal_year = '2020-21' AND beat IS NOT NULL AND fiscal_year IS NOT NULL"
+ },
+ {
+  "question": "How many seedlings were planted in the Char Kalam plantation of 2020-21?",
+  "ok": true,
+  "seconds": 2.4,
+  "route": "sql",
+  "trace": [
+   "router→sql",
+   "sql",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "In the Char Kalam plantation of 2020-21, 1,777,600 seedlings were planted in the mangrove plantation, while the number of seedlings for the mangrove enrichment plantation is not specified in the records. The mangrove plantation covered an area of 400.0 hectares, and the mangrove enrichment plantation covered 20.0 hectares.",
+  "sql": "SELECT file, type, area_ha, area_skm, seedlings FROM plantations WHERE beat LIKE '%Char Kalam%' AND fiscal_year = '2020-21' AND beat IS NOT NULL AND fiscal_year IS NOT NULL"
+ },
+ {
+  "question": "Which unions are covered by the Noakhali Range strip plantation 2023-24?",
+  "ok": true,
+  "seconds": 2.5,
+  "route": "sql",
+  "trace": [
+   "router→sql",
+   "sql",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "The Noakhali Range strip plantation for the 2023-24 fiscal year covers the unions of Noakhali, Ayasbaliya, and Dharmopur.",
+  "sql": "SELECT DISTINCT union_name, file FROM plantations WHERE range='Noakhali' AND type='strip' AND fiscal_year='2023-24' AND union_name IS NOT NULL"
+ },
+ {
+  "question": "What does 'one seedling hectare' mean in these journals?",
+  "ok": true,
+  "seconds": 12.2,
+  "route": "docs",
+  "trace": [
+   "router→docs",
+   "retrieve",
+   "grade(2/6)",
+   "generate",
+   "check(ok)"
+  ],
+  "answer": "\"One seedling hectare\" means 4,444 seedlings per hectare. In the Sagoria Range mangrove plantation (FY 2021-22), keora seedlings are spaced at 1.5 m × 1.5 m and planted in lines, so funding is based on hectare with 4,444 seedlings counted as one seedling hectare. In the Charbata Range mangrove plantation (FY 2020-21), the same definition applies: 4,444 seedlings per hectare.",
+  "sql": null
+ },
+ {
+  "question": "Hello, what can you do?",
+  "ok": true,
+  "seconds": 0.7,
+  "route": "chitchat",
+  "trace": [
+   "router→chitchat",
+   "generate",
+   "check(skip)"
+  ],
+  "answer": "I can answer questions about the Plantation Journals of the SUFAL Project, Coastal Forest Division, Noakhali, Bangladesh. I provide specific details regarding plantations, locations, years, and species based strictly on the provided documents.",
+  "sql": null
+ }
+]

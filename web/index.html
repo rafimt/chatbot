@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Noakhali Plantation Q&amp;A</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root { --forest: #0f3d2e; }
+    /* One screen high: only the message list (and sidebar) scroll, the input stays at the bottom */
+    html, body { height: 100%; overflow: hidden; }
+    body { background: #f4f7f5; }
+    .layout { height: 100vh; height: 100dvh; }
+    .layout > aside, .layout > main { min-height: 0; max-height: 100%; }
+    .layout > main { flex: 1 1 0 !important; }  /* Bootstrap's .row > * sets flex-shrink: 0 */
+    .sidebar { background: var(--forest); color: #e8f3ee; overflow-y: auto; }
+    .sidebar h6 { color: #9fd8bd; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+    .stat { background: #1a5641; border-radius: .5rem; }
+    .stat b { font-size: 1.4rem; display: block; }
+    .qbtn { background: #174c39; color: #e8f3ee; border: 1px solid #266b51; text-align: left; font-size: .85rem; }
+    .qbtn:hover { background: #226a4f; color: #fff; }
+    #messages { overflow-y: auto; min-height: 0; flex: 1 1 auto; }
+    #form { flex: 0 0 auto; }
+    .bubble { max-width: 780px; white-space: pre-wrap; line-height: 1.55; }
+    .bubble.user { background: var(--forest); color: #fff; }
+    .src { font-size: .78rem; }
+    .btn-forest { background: var(--forest); color: #fff; }
+    .btn-forest:hover { background: #1a5641; color: #fff; }
+    @media (max-width: 767px) { .layout > aside.sidebar { max-height: 38vh; flex: 0 0 auto; } }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row layout flex-column flex-md-row flex-nowrap">
+
+    <!-- Sidebar: stats + sample questions -->
+    <aside class="sidebar col-md-4 col-lg-3 p-3">
+      <h5 class="mb-0">Coastal Noakhali</h5>
+      <div class="small opacity-75 mb-3">Plantation Journals Q&amp;A</div>
+      <div class="row g-2 text-center small mb-3" id="stats"></div>
+      <div id="questions"></div>
+      <div class="small opacity-50 mt-3" id="model"></div>
+    </aside>
+
+    <!-- Chat -->
+    <main class="col d-flex flex-column p-0">
+      <div id="messages" class="flex-grow-1 p-3 p-md-4">
+        <p id="empty" class="text-muted text-center mt-5">
+          Ask about plantation area, seedlings, species, ranges, beats or fiscal years.
+        </p>
+      </div>
+      <form id="form" class="d-flex gap-2 p-3 border-top bg-white">
+        <input id="input" class="form-control" placeholder="Ask a question…" autocomplete="off">
+        <button id="send" class="btn btn-forest px-4">Ask</button>
+      </form>
+    </main>
+  </div>
+</div>
+
+<!-- Source page viewer -->
+<div class="modal fade" id="pageModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title" id="pageTitle"></h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0 text-center"><img id="pageImg" class="img-fluid" alt="source page"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const modal = new bootstrap.Modal($('pageModal'));
+  let busy = false;
+
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;  // textContent: never inject HTML from the model
+    return e;
+  }
+
+  function showPage(s) {
+    $('pageTitle').textContent = `${s.file}, page ${s.page}`;
+    $('pageImg').src = `/api/page/${encodeURIComponent(s.file)}/${s.page}`;
+    modal.show();
+  }
+
+  function addMessage(role, text, extra = {}) {
+    $('empty')?.remove();
+    const wrap = el('div', `mb-3 d-flex flex-column ${role === 'user' ? 'align-items-end' : 'align-items-start'}`);
+    const cls = role === 'user' ? 'user' : extra.error ? 'bg-danger-subtle border border-danger-subtle' : 'bg-white border';
+    wrap.append(el('div', `bubble rounded-3 px-3 py-2 ${cls}`, text));
+    if (extra.sources?.length) {
+      const row = el('div', 'd-flex flex-wrap gap-1 mt-1');
+      extra.sources.forEach((s) => {
+        const b = el('button', 'btn btn-sm btn-outline-success rounded-pill src', `${s.file} p.${s.page}`);
+        b.onclick = () => showPage(s);
+        row.append(b);
+      });
+      wrap.append(row);
+    }
+    if (extra.route) {
+      const label = { sql: '📊 from the plantations table', docs: '📄 from the documents', chitchat: '💬 general' }[extra.route];
+      const meta = el('div', 'small text-muted mt-1', `${label || extra.route} · ${extra.model || ''}`);
+      if (extra.trace?.length) {  // the graph path, e.g. router→docs › retrieve › grade(2/6) › generate › check(ok)
+        const d = el('details', 'd-inline ms-1');
+        d.append(el('summary', 'd-inline', 'steps'),
+                 el('div', 'font-monospace', extra.trace.join(' › ') + (extra.sql ? `\nSQL: ${extra.sql}` : '')));
+        meta.append(d);
+      }
+      wrap.append(meta);
+    } else if (extra.model) wrap.append(el('div', 'small text-muted mt-1', `answered by ${extra.model}`));
+    $('messages').append(wrap);
+    $('messages').scrollTop = $('messages').scrollHeight;
+    return wrap;
+  }
+
+  async function ask(question) {
+    question = (question ?? $('input').value).trim();
+    if (!question || busy) return;
+    busy = true; $('send').disabled = true; $('input').value = '';
+    addMessage('user', question);
+    const wait = addMessage('bot', 'Reading the journals…');
+    wait.querySelector('.bubble').insertAdjacentHTML('afterbegin',
+      '<span class="spinner-border spinner-border-sm me-2 text-success"></span>');
+    try {
+      const r = await fetch('/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question }),
+      });
+      const d = await r.json();
+      wait.remove();
+      if (!r.ok) throw new Error(d.detail || r.statusText);
+      addMessage('bot', d.answer, { sources: d.sources, model: d.model, route: d.route, trace: d.trace, sql: d.sql });
+    } catch (e) {
+      wait.remove();
+      addMessage('bot', `Error: ${e.message}`, { error: true });
+    }
+    busy = false; $('send').disabled = false; $('input').focus();
+  }
+
+  $('form').onsubmit = (e) => { e.preventDefault(); ask(); };
+
+  fetch('/api/stats').then((r) => r.json()).then((s) => {
+    [['documents', 'journals'], ['pages', 'pages'], ['chunks', 'passages']].forEach(([k, label]) => {
+      const c = el('div', 'col-4');
+      const box = el('div', 'stat p-2');
+      box.append(el('b', null, s[k]), label);
+      c.append(box);
+      $('stats').append(c);
+    });
+    $('model').textContent = `Model: ${s.model}`;
+  });
+
+  fetch('/api/questions').then((r) => r.json()).then((groups) => {
+    groups.forEach((g) => {
+      $('questions').append(el('h6', 'mt-3 mb-2', g.category));
+      g.questions.forEach((q) => {
+        const b = el('button', 'btn btn-sm qbtn w-100 mb-1', q);
+        b.onclick = () => ask(q);
+        $('questions').append(b);
+      });
+    });
+  });
+</script>
+</body>
+</html>

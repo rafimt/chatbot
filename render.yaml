@@ -1,0 +1,22 @@
+# Render Blueprint: free Docker web service (render.com -> New -> Blueprint -> pick this repo)
+services:
+  - type: web
+    name: noakhali-qa
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/stats
+    envVars:
+      # secrets: Render asks for the values when the blueprint is created (never stored in git)
+      - key: GROQ_API_KEY
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
+      - key: LLM_MODELS
+        value: groq:qwen/qwen3.8-27b,openrouter:inclusionai/ling-3.0-flash-sante:free,groq:openai/gpt-oss-120b
+      - key: LLM_MODELS_FAST
+        value: groq:openai/gpt-oss-20b,groq:qwen/qwen3.8-27b,openrouter:inclusionai/ling-3.0-flash-sante:free
+      - key: LLM_MODELS_SQL
+        value: groq:openai/gpt-oss-120b,groq:qwen/qwen3.8-27b

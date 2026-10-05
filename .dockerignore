@@ -1,0 +1,8 @@
+.env
+.venv
+frontend
+dist
+**/__pycache__
+backend/data/extract_cache.json
+backend/data/*.log
+*.bat

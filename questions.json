@@ -1,0 +1,42 @@
+[
+  {
+    "category": "How many (counts)",
+    "questions": [
+      "How many plantation journals are there in total?",
+      "How many strip plantations are recorded?",
+      "How many mangrove plantations are recorded?",
+      "How many plantations were done in financial year 2020-2021?",
+      "How many journals are from Hatiya upazila?",
+      "How many seedlings were planted in the Char Kalam mangrove plantation?"
+    ]
+  },
+  {
+    "category": "Specific plantation facts",
+    "questions": [
+      "What is the plantation area of Char Kalam Beat in 2020-2021?",
+      "Which species were planted in the Char Kalam & New Char Yunus plantation?",
+      "What spacing was used for the Keora mangrove plantations?",
+      "Which unions are covered by the Noakhali Range strip plantation 2023-24?",
+      "What species were used in the Noakhali Range strip plantation 2023-24?",
+      "Who is the land regulatory agency for the Noakhali Range strip plantation?"
+    ]
+  },
+  {
+    "category": "Methods & reasons",
+    "questions": [
+      "Why was the Char Kalam site selected for mangrove plantation?",
+      "How is a plantation site selected for strip plantation?",
+      "What planting method was used on canal dams?",
+      "What does 'one seedling hectare' mean in these journals?"
+    ]
+  },
+  {
+    "category": "Overview & comparison",
+    "questions": [
+      "Which ranges and beats appear in the journals?",
+      "List the plantations of financial year 2023-2024 with their area.",
+      "Compare the mangrove plantations of Jahajmara and Nalchira ranges.",
+      "What is the climate of Noakhali according to the journals?"
+    ]
+  }
+]

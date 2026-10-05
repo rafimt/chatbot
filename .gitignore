@@ -1,0 +1,11 @@
+# secrets
+.env
+# local environment / builds
+.venv/
+frontend/
+dist/
+__pycache__/
+*.pyc
+# caches and logs
+backend/data/extract_cache.json
+backend/data/*.log

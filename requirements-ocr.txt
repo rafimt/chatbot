@@ -1,0 +1,4 @@
+# Extra packages, only needed to rebuild the index from PDFs (rebuild_index.bat)
+# CPU OCR works everywhere. For ~30x faster OCR on an NVIDIA GPU, instead install:
+#   pip uninstall -y onnxruntime && pip install "onnxruntime-gpu[cuda,cudnn]"
+rapidocr-onnxruntime
